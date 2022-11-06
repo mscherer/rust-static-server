@@ -15,8 +15,7 @@ async fn get_file(req: Request<Body>) -> Result<Response<Body>, Infallible> {
         &Method::GET | &Method::HEAD => {
             // requested_path => &str
             let mut requested_path = req.uri().path().to_string();
-            println!("Requested path: {}", requested_path);
-            // fix 
+
             if requested_path.ends_with('/') {
                 requested_path.push_str("index.html");
             };
