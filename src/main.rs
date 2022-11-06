@@ -10,8 +10,22 @@ use std::convert::Infallible;
 use std::env;
 use std::io::Read;
 use std::net::SocketAddr;
+use cached::proc_macro::cached;
+use cached::SizedCache;
 
 static WEBSITE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/site");
+
+#[cached(
+    type = "SizedCache<String, String>",
+    create = "{ SizedCache::with_size(5) }",
+    convert = r#"{ path.path().to_str().unwrap().to_string() }"#
+)]
+fn uncompress(path: &include_dir::File) -> String {
+    let mut gz = GzDecoder::new(path.contents());
+    let mut body = String::new();
+    gz.read_to_string(&mut body).unwrap();
+    body
+}
 
 async fn get_file(req: Request<Body>) -> Result<Response<Body>, Infallible> {
     match req.method() {
@@ -30,11 +44,7 @@ async fn get_file(req: Request<Body>) -> Result<Response<Body>, Infallible> {
 
             match WEBSITE_DIR.get_file(path) {
                 Some(path) => {
-                    let mut gz = GzDecoder::new(path.contents());
-                    let mut body = String::new();
-                    gz.read_to_string(&mut body).unwrap();
-
-                    Ok(Response::new(Body::from(body)))
+                    Ok(Response::new(Body::from(uncompress(path))))
                 }
                 None => {
                     // remove .gz
