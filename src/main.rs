@@ -1,6 +1,8 @@
 extern crate hyper;
 extern crate include_dir;
 
+use cached::proc_macro::cached;
+use cached::SizedCache;
 use debug_print::debug_println;
 use flate2::read::GzDecoder;
 use hyper::service::{make_service_fn, service_fn};
@@ -10,8 +12,6 @@ use std::convert::Infallible;
 use std::env;
 use std::io::Read;
 use std::net::SocketAddr;
-use cached::proc_macro::cached;
-use cached::SizedCache;
 
 static WEBSITE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/site");
 
@@ -43,9 +43,7 @@ async fn get_file(req: Request<Body>) -> Result<Response<Body>, Infallible> {
             debug_println!("Looking for {}", path);
 
             match WEBSITE_DIR.get_file(path) {
-                Some(path) => {
-                    Ok(Response::new(Body::from(uncompress(path))))
-                }
+                Some(path) => Ok(Response::new(Body::from(uncompress(path)))),
                 None => {
                     // remove .gz
                     let path = &requested_path[1..requested_path.len() - 3];
