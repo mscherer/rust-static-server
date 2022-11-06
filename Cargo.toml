@@ -6,6 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [profile.release]
 opt-level = 's' # Optimize for size
+lto = true
+codegen-units = 1
 
 [dependencies]
 include_dir = "0.7.3"   
