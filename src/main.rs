@@ -13,7 +13,7 @@ use std::env;
 use std::io::Read;
 use std::net::SocketAddr;
 
-static WEBSITE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/site");
+static WEBSITE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/public");
 
 #[cached(
     type = "SizedCache<String, String>",
