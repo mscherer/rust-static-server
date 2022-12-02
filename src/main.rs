@@ -72,7 +72,7 @@ async fn get_file(req: Request<Body>) -> Result<Response<Body>, Infallible> {
 async fn main() {
     let port: u16 = match env::var("PORT") {
         Ok(val) => val.parse().unwrap(),
-        Err(_) => 3000,
+        Err(_) => 8088,
     };
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
